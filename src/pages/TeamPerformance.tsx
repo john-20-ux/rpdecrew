@@ -95,7 +95,7 @@ export default function TeamPerformance() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-xl border border-border bg-card p-5">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="tasks-by-person">
           <h3 className="text-sm font-semibold mb-4">Tasks Completed by Person</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
