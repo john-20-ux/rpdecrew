@@ -107,7 +107,7 @@ export default function StageAnalytics() {
       </div>
 
       {/* Trends */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-xl border border-border bg-card p-5">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="stage-trends">
         <h3 className="text-sm font-semibold mb-4">Stage Trends Over Time</h3>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
