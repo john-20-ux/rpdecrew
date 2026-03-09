@@ -27,7 +27,7 @@ export function AppSidebar() {
       <SidebarContent>
         <div className="flex items-center gap-2 px-4 py-5">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
-            TW
+            W
           </div>
           {!collapsed && (
             <span className="font-semibold text-sm text-sidebar-foreground truncate">

@@ -69,7 +69,6 @@ export default function StageAnalytics() {
         </div>
         <ExportBar tasks={tasks} chartIds={STAGE_CHARTS} />
       </motion.div>
-      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Pie */}
