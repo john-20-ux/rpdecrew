@@ -67,9 +67,12 @@ export default function TeamPerformance() {
 
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-2xl font-bold tracking-tight">Team Performance</h1>
-        <p className="text-sm text-muted-foreground mt-1">Detailed team member productivity analytics</p>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Team Performance</h1>
+          <p className="text-sm text-muted-foreground mt-1">Detailed team member productivity analytics</p>
+        </div>
+        <ExportBar tasks={tasks} chartIds={TEAM_CHARTS} />
       </motion.div>
 
       {/* Leaderboard */}

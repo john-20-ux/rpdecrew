@@ -62,9 +62,13 @@ export default function StageAnalytics() {
 
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-2xl font-bold tracking-tight">Stage Analytics</h1>
-        <p className="text-sm text-muted-foreground mt-1">Work distribution across engineering stages</p>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Stage Analytics</h1>
+          <p className="text-sm text-muted-foreground mt-1">Work distribution across engineering stages</p>
+        </div>
+        <ExportBar tasks={tasks} chartIds={STAGE_CHARTS} />
+      </motion.div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
