@@ -88,7 +88,7 @@ export default function StageAnalytics() {
         </motion.div>
 
         {/* Hours bar */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-xl border border-border bg-card p-5">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="hours-per-stage">
           <h3 className="text-sm font-semibold mb-4">Hours per Stage</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
