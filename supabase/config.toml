@@ -1,10 +1,1 @@
 project_id = "oyonoxpwohhgnlwdsixx"
-
-[functions.google-auth]
-verify_jwt = false
-
-[functions.google-drive-browse]
-verify_jwt = false
-
-[functions.google-sheets-sync]
-verify_jwt = false
