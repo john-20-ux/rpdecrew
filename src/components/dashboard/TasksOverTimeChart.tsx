@@ -29,7 +29,7 @@ export function TasksOverTimeChart({ tasks }: Props) {
   }, [tasks, dateRange]);
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5">
+    <div className="rounded-xl border border-border bg-card p-5" data-chart-id="tasks-over-time">
       <h3 className="text-sm font-semibold mb-4">Tasks Over Time</h3>
       <div className="h-[280px]">
         <ResponsiveContainer width="100%" height="100%">

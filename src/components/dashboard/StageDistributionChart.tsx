@@ -19,7 +19,7 @@ export function StageDistributionChart({ tasks }: Props) {
   }, [tasks]);
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5">
+    <div className="rounded-xl border border-border bg-card p-5" data-chart-id="stage-distribution">
       <h3 className="text-sm font-semibold mb-4">Stage Distribution</h3>
       <div className="h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
