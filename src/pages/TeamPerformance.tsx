@@ -10,6 +10,12 @@ import { TEAM_MEMBERS } from "@/lib/mock-data";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Trophy, Medal, Award } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ExportBar } from "@/components/ExportBar";
+
+const TEAM_CHARTS = [
+  { id: "tasks-by-person", label: "Tasks by Person" },
+  { id: "stage-workload", label: "Stage Workload" },
+];
 
 const PERSON_COLORS = [
   "hsl(221, 83%, 53%)", "hsl(142, 71%, 45%)", "hsl(38, 92%, 50%)",
