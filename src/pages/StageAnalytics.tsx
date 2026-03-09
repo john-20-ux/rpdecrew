@@ -72,7 +72,7 @@ export default function StageAnalytics() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Pie */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-xl border border-border bg-card p-5">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="stage-pie">
           <h3 className="text-sm font-semibold mb-4">Task Distribution</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
