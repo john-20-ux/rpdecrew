@@ -9,6 +9,13 @@ import { STAGE_COLORS, STAGES, type Stage } from "@/lib/stage-colors";
 import { useDateFilter } from "@/contexts/DateFilterContext";
 import { eachDayOfInterval, format, parseISO } from "date-fns";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ExportBar } from "@/components/ExportBar";
+
+const STAGE_CHARTS = [
+  { id: "stage-pie", label: "Task Distribution" },
+  { id: "hours-per-stage", label: "Hours per Stage" },
+  { id: "stage-trends", label: "Stage Trends" },
+];
 
 export default function StageAnalytics() {
   const tasks = useFilteredTasks();
