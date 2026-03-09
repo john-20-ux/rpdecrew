@@ -34,7 +34,7 @@ export default function StageAnalytics() {
     const days = eachDayOfInterval({ start: dateRange.from, end: dateRange.to });
     // Group into weekly buckets for readability
     const weekSize = Math.max(1, Math.ceil(days.length / 15));
-    const buckets: { label: string; [key: string]: string | number }[] = [];
+    const buckets: Record<string, string | number>[] = [];
 
     for (let i = 0; i < days.length; i += weekSize) {
       const bucket = days.slice(i, i + weekSize);
