@@ -9,6 +9,13 @@ import { STAGE_COLORS, STAGES, type Stage } from "@/lib/stage-colors";
 import { useDateFilter } from "@/contexts/DateFilterContext";
 import { eachDayOfInterval, format, parseISO } from "date-fns";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ExportBar } from "@/components/ExportBar";
+
+const STAGE_CHARTS = [
+  { id: "stage-pie", label: "Task Distribution" },
+  { id: "hours-per-stage", label: "Hours per Stage" },
+  { id: "stage-trends", label: "Stage Trends" },
+];
 
 export default function StageAnalytics() {
   const tasks = useFilteredTasks();
@@ -55,14 +62,17 @@ export default function StageAnalytics() {
 
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-2xl font-bold tracking-tight">Stage Analytics</h1>
-        <p className="text-sm text-muted-foreground mt-1">Work distribution across engineering stages</p>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Stage Analytics</h1>
+          <p className="text-sm text-muted-foreground mt-1">Work distribution across engineering stages</p>
+        </div>
+        <ExportBar tasks={tasks} chartIds={STAGE_CHARTS} />
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Pie */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-xl border border-border bg-card p-5">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="stage-pie">
           <h3 className="text-sm font-semibold mb-4">Task Distribution</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -78,7 +88,7 @@ export default function StageAnalytics() {
         </motion.div>
 
         {/* Hours bar */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-xl border border-border bg-card p-5">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="hours-per-stage">
           <h3 className="text-sm font-semibold mb-4">Hours per Stage</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -97,7 +107,7 @@ export default function StageAnalytics() {
       </div>
 
       {/* Trends */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-xl border border-border bg-card p-5">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="stage-trends">
         <h3 className="text-sm font-semibold mb-4">Stage Trends Over Time</h3>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">

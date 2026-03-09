@@ -9,6 +9,12 @@ import { getPreviousPeriodRange } from "@/lib/date-utils";
 import { MOCK_TASKS } from "@/lib/mock-data";
 import { isWithinInterval, parseISO } from "date-fns";
 import { motion } from "framer-motion";
+import { ExportBar } from "@/components/ExportBar";
+
+const DASHBOARD_CHARTS = [
+  { id: "tasks-over-time", label: "Tasks Over Time" },
+  { id: "stage-distribution", label: "Stage Distribution" },
+];
 
 export default function Dashboard() {
   const tasks = useFilteredTasks();
@@ -48,11 +54,14 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Overview of your team's engineering productivity
-        </p>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Overview of your team's engineering productivity
+          </p>
+        </div>
+        <ExportBar tasks={tasks} chartIds={DASHBOARD_CHARTS} />
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">

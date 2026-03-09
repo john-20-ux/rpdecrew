@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, Users, Layers, UserCircle, Lightbulb, FileDown, Settings
+  LayoutDashboard, Users, Layers, UserCircle, Lightbulb
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -15,7 +15,6 @@ const navItems = [
   { title: "Stage Analytics", url: "/stages", icon: Layers },
   { title: "Individual Reports", url: "/individuals", icon: UserCircle },
   { title: "Insights", url: "/insights", icon: Lightbulb },
-  { title: "Reports Export", url: "/export", icon: FileDown },
 ];
 
 export function AppSidebar() {
@@ -26,9 +25,9 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
-        <div className="flex items-center gap-2 px-4 py-5">
+        <div className={`flex items-center gap-2 py-5 ${collapsed ? "justify-center px-0" : "px-4"}`}>
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
-            TW
+            W
           </div>
           {!collapsed && (
             <span className="font-semibold text-sm text-sidebar-foreground truncate">

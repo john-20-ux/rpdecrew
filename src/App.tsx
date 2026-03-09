@@ -10,7 +10,6 @@ import StageAnalytics from "./pages/StageAnalytics";
 import IndividualReports from "./pages/IndividualReports";
 import IndividualProfile from "./pages/IndividualProfile";
 import Insights from "./pages/Insights";
-import ReportsExport from "./pages/ReportsExport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,7 +28,6 @@ const App = () => (
             <Route path="/individuals" element={<IndividualReports />} />
             <Route path="/individuals/:name" element={<IndividualProfile />} />
             <Route path="/insights" element={<Insights />} />
-            <Route path="/export" element={<ReportsExport />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppLayout>

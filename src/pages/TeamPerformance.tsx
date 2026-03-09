@@ -10,6 +10,12 @@ import { TEAM_MEMBERS } from "@/lib/mock-data";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Trophy, Medal, Award } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ExportBar } from "@/components/ExportBar";
+
+const TEAM_CHARTS = [
+  { id: "tasks-by-person", label: "Tasks by Person" },
+  { id: "stage-workload", label: "Stage Workload" },
+];
 
 const PERSON_COLORS = [
   "hsl(221, 83%, 53%)", "hsl(142, 71%, 45%)", "hsl(38, 92%, 50%)",
@@ -61,9 +67,12 @@ export default function TeamPerformance() {
 
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-2xl font-bold tracking-tight">Team Performance</h1>
-        <p className="text-sm text-muted-foreground mt-1">Detailed team member productivity analytics</p>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Team Performance</h1>
+          <p className="text-sm text-muted-foreground mt-1">Detailed team member productivity analytics</p>
+        </div>
+        <ExportBar tasks={tasks} chartIds={TEAM_CHARTS} />
       </motion.div>
 
       {/* Leaderboard */}
@@ -86,7 +95,7 @@ export default function TeamPerformance() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-xl border border-border bg-card p-5">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="tasks-by-person">
           <h3 className="text-sm font-semibold mb-4">Tasks Completed by Person</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -103,7 +112,7 @@ export default function TeamPerformance() {
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-xl border border-border bg-card p-5">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="stage-workload">
           <h3 className="text-sm font-semibold mb-4">Stage Workload by Person</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
