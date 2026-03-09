@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, Users, Layers, UserCircle, Lightbulb, FileDown, Settings
+  LayoutDashboard, Users, Layers, UserCircle, Lightbulb
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -15,7 +15,6 @@ const navItems = [
   { title: "Stage Analytics", url: "/stages", icon: Layers },
   { title: "Individual Reports", url: "/individuals", icon: UserCircle },
   { title: "Insights", url: "/insights", icon: Lightbulb },
-  { title: "Reports Export", url: "/export", icon: FileDown },
 ];
 
 export function AppSidebar() {
