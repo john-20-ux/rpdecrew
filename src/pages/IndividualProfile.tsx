@@ -6,10 +6,10 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import { useFilteredTasks } from "@/hooks/useFilteredTasks";
-import { STAGE_COLORS, STAGES, type Stage } from "@/lib/stage-colors";
+import { STAGE_COLORS, type Stage } from "@/lib/stage-colors";
 import { useDateFilter } from "@/contexts/DateFilterContext";
 import { eachDayOfInterval, format } from "date-fns";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { ListChecks, CheckCircle2, Clock, Timer } from "lucide-react";
@@ -17,7 +17,7 @@ import { ListChecks, CheckCircle2, Clock, Timer } from "lucide-react";
 export default function IndividualProfile() {
   const { name } = useParams<{ name: string }>();
   const decodedName = decodeURIComponent(name || "");
-  const allTasks = useFilteredTasks();
+  const { tasks: allTasks, loading } = useFilteredTasks();
   const { dateRange } = useDateFilter();
 
   const tasks = useMemo(() => allTasks.filter((t) => t.owner === decodedName), [allTasks, decodedName]);
@@ -55,9 +55,13 @@ export default function IndividualProfile() {
       hours[t.stage] = (hours[t.stage] || 0) + t.hours_spent;
     });
     return Object.entries(counts)
-      .map(([name, value]) => ({ name, value, hours: Math.round((hours[name] || 0) * 10) / 10, color: STAGE_COLORS[name as Stage] }))
+      .map(([name, value]) => ({ name, value, hours: Math.round((hours[name] || 0) * 10) / 10, color: STAGE_COLORS[name as Stage] || "hsl(220, 9%, 46%)" }))
       .sort((a, b) => b.value - a.value);
   }, [tasks]);
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
+  }
 
   return (
     <div className="space-y-6">

@@ -14,7 +14,7 @@ export function StageDistributionChart({ tasks }: Props) {
       counts[t.stage] = (counts[t.stage] || 0) + 1;
     });
     return Object.entries(counts)
-      .map(([name, value]) => ({ name, value, color: STAGE_COLORS[name as Stage] }))
+      .map(([name, value]) => ({ name, value, color: STAGE_COLORS[name as Stage] || "hsl(220, 9%, 46%)" }))
       .sort((a, b) => b.value - a.value);
   }, [tasks]);
 
