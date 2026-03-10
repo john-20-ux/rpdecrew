@@ -6,7 +6,7 @@ import { StageDistributionChart } from "@/components/dashboard/StageDistribution
 import { useFilteredTasks } from "@/hooks/useFilteredTasks";
 import { useDateFilter } from "@/contexts/DateFilterContext";
 import { getPreviousPeriodRange } from "@/lib/date-utils";
-import { MOCK_TASKS } from "@/lib/mock-data";
+import { useTasksData } from "@/hooks/useTasksData";
 import { isWithinInterval, parseISO } from "date-fns";
 import { motion } from "framer-motion";
 import { ExportBar } from "@/components/ExportBar";
@@ -19,14 +19,17 @@ const DASHBOARD_CHARTS = [
 export default function Dashboard() {
   const tasks = useFilteredTasks();
   const { dateRange } = useDateFilter();
+  const { data: MOCK_TASKS = [] } = useTasksData();
 
   const prevRange = useMemo(() => getPreviousPeriodRange(dateRange), [dateRange]);
   const prevTasks = useMemo(
     () =>
-      MOCK_TASKS.filter((t) =>
-        isWithinInterval(parseISO(t.date_worked), { start: prevRange.from, end: prevRange.to })
-      ),
-    [prevRange]
+      MOCK_TASKS.filter((t) => {
+        try {
+          return isWithinInterval(parseISO(t.date_worked), { start: prevRange.from, end: prevRange.to })
+        } catch(e) { return false; }
+      }),
+    [prevRange, MOCK_TASKS]
   );
 
   const metrics = useMemo(() => {

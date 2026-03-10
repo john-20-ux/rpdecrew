@@ -37,11 +37,19 @@ export default function IndividualProfile() {
     const days = eachDayOfInterval({ start: dateRange.from, end: dateRange.to });
     const weekSize = Math.max(1, Math.ceil(days.length / 20));
     const buckets: { label: string; completed: number }[] = [];
+    
+    // Convert all task dates to local YYYY-MM-DD strings for easy matching
+    const taskDates = tasks
+      .filter((t) => t.status === "Completed")
+      .map((t) => t.date_worked.split("T")[0]);
+
     for (let i = 0; i < days.length; i += weekSize) {
       const bucket = days.slice(i, i + weekSize);
       const label = format(bucket[0], "MMM d");
-      const bucketDates = new Set(bucket.map((d) => format(d, "yyyy-MM-dd")));
-      const count = tasks.filter((t) => bucketDates.has(t.date_worked) && t.status === "Completed").length;
+      
+      const bucketDateStrings = new Set(bucket.map((d) => format(d, "yyyy-MM-dd")));
+      const count = taskDates.filter((dateStr) => bucketDateStrings.has(dateStr)).length;
+      
       buckets.push({ label, completed: count });
     }
     return buckets;

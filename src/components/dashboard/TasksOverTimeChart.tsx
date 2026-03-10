@@ -15,7 +15,7 @@ export function TasksOverTimeChart({ tasks }: Props) {
     const days = eachDayOfInterval({ start: dateRange.from, end: dateRange.to });
     const tasksByDay = new Map<string, number>();
     tasks.forEach((t) => {
-      const key = t.date_worked;
+      const key = t.date_worked.split("T")[0];
       tasksByDay.set(key, (tasksByDay.get(key) || 0) + 1);
     });
 

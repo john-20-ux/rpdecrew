@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useFilteredTasks } from "@/hooks/useFilteredTasks";
-import { TEAM_MEMBERS } from "@/lib/mock-data";
 import { STAGES, STAGE_COLORS, type Stage } from "@/lib/stage-colors";
 import { Lightbulb, TrendingUp, AlertTriangle, Zap } from "lucide-react";
 
@@ -18,6 +17,8 @@ export default function Insights() {
     const result: Insight[] = [];
     const totalTasks = tasks.length;
     if (totalTasks === 0) return result;
+
+    const TEAM_MEMBERS = Array.from(new Set(tasks.map((t) => t.owner)));
 
     // Stage distribution insights
     const stageCounts: Record<string, number> = {};

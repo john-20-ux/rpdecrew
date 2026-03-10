@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useFilteredTasks } from "@/hooks/useFilteredTasks";
-import { TEAM_MEMBERS } from "@/lib/mock-data";
 import { STAGE_COLORS, type Stage } from "@/lib/stage-colors";
 import { UserCircle } from "lucide-react";
 
@@ -10,6 +9,7 @@ export default function IndividualReports() {
   const tasks = useFilteredTasks();
 
   const members = useMemo(() => {
+    const TEAM_MEMBERS = Array.from(new Set(tasks.map(t => t.owner)));
     return TEAM_MEMBERS.map((name) => {
       const memberTasks = tasks.filter((t) => t.owner === name);
       const completed = memberTasks.filter((t) => t.status === "Completed").length;

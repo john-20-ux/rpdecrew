@@ -43,13 +43,18 @@ export default function StageAnalytics() {
     const weekSize = Math.max(1, Math.ceil(days.length / 15));
     const buckets: Record<string, string | number>[] = [];
 
+    const taskData = tasks.map(t => ({
+      stage: t.stage,
+      dateStr: t.date_worked.split("T")[0]
+    }));
+
     for (let i = 0; i < days.length; i += weekSize) {
       const bucket = days.slice(i, i + weekSize);
       const label = format(bucket[0], "MMM d");
       const row: Record<string, string | number> = { label };
-      const bucketDates = new Set(bucket.map((d) => format(d, "yyyy-MM-dd")));
+      const bucketDateStrings = new Set(bucket.map((d) => format(d, "yyyy-MM-dd")));
 
-      const bucketTasks = tasks.filter((t) => bucketDates.has(t.date_worked));
+      const bucketTasks = taskData.filter((t) => bucketDateStrings.has(t.dateStr));
       STAGES.forEach((stage) => {
         row[stage] = bucketTasks.filter((t) => t.stage === stage).length;
       });

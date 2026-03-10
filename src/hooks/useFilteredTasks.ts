@@ -1,15 +1,21 @@
 import { useMemo } from "react";
-import { MOCK_TASKS, type Task } from "@/lib/mock-data";
+import { type Task } from "@/lib/mock-data";
 import { useDateFilter } from "@/contexts/DateFilterContext";
 import { isWithinInterval, parseISO } from "date-fns";
+import { useTasksData } from "./useTasksData";
 
 export function useFilteredTasks(): Task[] {
   const { dateRange } = useDateFilter();
+  const { data: allTasks = [] } = useTasksData();
 
   return useMemo(() => {
-    return MOCK_TASKS.filter((task) => {
-      const taskDate = parseISO(task.date_worked);
-      return isWithinInterval(taskDate, { start: dateRange.from, end: dateRange.to });
+    return allTasks.filter((task) => {
+      try {
+        const taskDate = parseISO(task.date_worked);
+        return isWithinInterval(taskDate, { start: dateRange.from, end: dateRange.to });
+      } catch (e) {
+        return false;
+      }
     });
-  }, [dateRange]);
+  }, [dateRange, allTasks]);
 }

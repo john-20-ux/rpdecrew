@@ -6,7 +6,6 @@ import {
 } from "recharts";
 import { useFilteredTasks } from "@/hooks/useFilteredTasks";
 import { STAGE_COLORS, STAGES, type Stage } from "@/lib/stage-colors";
-import { TEAM_MEMBERS } from "@/lib/mock-data";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Trophy, Medal, Award } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -27,6 +26,7 @@ export default function TeamPerformance() {
   const tasks = useFilteredTasks();
 
   const memberStats = useMemo(() => {
+    const TEAM_MEMBERS = Array.from(new Set(tasks.map(t => t.owner)));
     const stats = TEAM_MEMBERS.map((name) => {
       const memberTasks = tasks.filter((t) => t.owner === name);
       const completed = memberTasks.filter((t) => t.status === "Completed");
