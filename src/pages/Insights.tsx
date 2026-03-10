@@ -1,11 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useFilteredTasks } from "@/hooks/useFilteredTasks";
-import { Lightbulb, TrendingUp, AlertTriangle, Zap, Loader2, RefreshCw, Database, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import { TEAM_MEMBERS } from "@/lib/mock-data";
+import { STAGES, STAGE_COLORS, type Stage } from "@/lib/stage-colors";
+import { Lightbulb, TrendingUp, AlertTriangle, Zap } from "lucide-react";
 
 interface Insight {
   type: "info" | "warning" | "success" | "tip";
@@ -14,70 +12,97 @@ interface Insight {
 }
 
 export default function Insights() {
-  const { tasks, loading: tasksLoading, hasData } = useFilteredTasks();
-  const { session } = useAuth();
-  const [insights, setInsights] = useState<Insight[]>([]);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [hasGenerated, setHasGenerated] = useState(false);
+  const tasks = useFilteredTasks();
 
-  const tasksSummary = useMemo(() => {
-    if (tasks.length === 0) return null;
+  const insights = useMemo(() => {
+    const result: Insight[] = [];
+    const totalTasks = tasks.length;
+    if (totalTasks === 0) return result;
 
+    // Stage distribution insights
     const stageCounts: Record<string, number> = {};
-    const ownerStats: Record<string, { tasks: number; hours: number; completed: number }> = {};
+    tasks.forEach((t) => { stageCounts[t.stage] = (stageCounts[t.stage] || 0) + 1; });
+    const sortedStages = Object.entries(stageCounts).sort((a, b) => b[1] - a[1]);
 
+    if (sortedStages[0]) {
+      const pct = Math.round((sortedStages[0][1] / totalTasks) * 100);
+      result.push({
+        type: "info",
+        title: `${sortedStages[0][0]} dominates workload`,
+        description: `${sortedStages[0][0]} accounts for ${pct}% of all tasks (${sortedStages[0][1]} tasks). Consider if this aligns with team priorities.`,
+      });
+    }
+
+    // Bug ratio
+    const bugCount = stageCounts["Bug"] || 0;
+    const bugPct = Math.round((bugCount / totalTasks) * 100);
+    if (bugPct > 15) {
+      result.push({
+        type: "warning",
+        title: `High bug ratio: ${bugPct}%`,
+        description: `${bugCount} bug tasks out of ${totalTasks} total. This may indicate quality issues in recent releases.`,
+      });
+    }
+
+    // Per-member workload
+    const memberHours = TEAM_MEMBERS.map((name) => {
+      const memberTasks = tasks.filter((t) => t.owner === name);
+      return { name, hours: memberTasks.reduce((s, t) => s + t.hours_spent, 0), tasks: memberTasks.length };
+    }).filter((m) => m.tasks > 0).sort((a, b) => b.hours - a.hours);
+
+    if (memberHours.length >= 2) {
+      const top = memberHours[0];
+      const bottom = memberHours[memberHours.length - 1];
+      if (top.hours > bottom.hours * 2.5) {
+        result.push({
+          type: "warning",
+          title: "Workload imbalance detected",
+          description: `${top.name} has logged ${top.hours.toFixed(0)}h while ${bottom.name} has ${bottom.hours.toFixed(0)}h. Consider rebalancing assignments.`,
+        });
+      }
+    }
+
+    // Top performer
+    const completionRates = TEAM_MEMBERS.map((name) => {
+      const mt = tasks.filter((t) => t.owner === name);
+      const completed = mt.filter((t) => t.status === "Completed").length;
+      return { name, rate: mt.length > 0 ? completed / mt.length : 0, count: mt.length };
+    }).filter((m) => m.count >= 5).sort((a, b) => b.rate - a.rate);
+
+    if (completionRates[0]) {
+      result.push({
+        type: "success",
+        title: `${completionRates[0].name} leads completion rate`,
+        description: `${Math.round(completionRates[0].rate * 100)}% completion rate across ${completionRates[0].count} tasks. Outstanding execution!`,
+      });
+    }
+
+    // Fastest worker per stage
+    const stageAvgHours: Record<string, { total: number; count: number }> = {};
     tasks.forEach((t) => {
-      stageCounts[t.stage] = (stageCounts[t.stage] || 0) + 1;
-      if (!ownerStats[t.owner]) ownerStats[t.owner] = { tasks: 0, hours: 0, completed: 0 };
-      ownerStats[t.owner].tasks++;
-      ownerStats[t.owner].hours += t.hours_spent;
-      if (t.status === "Completed") ownerStats[t.owner].completed++;
+      if (!stageAvgHours[t.stage]) stageAvgHours[t.stage] = { total: 0, count: 0 };
+      stageAvgHours[t.stage].total += t.hours_spent;
+      stageAvgHours[t.stage].count++;
+    });
+    const optimizationHours = stageAvgHours["Optimization"];
+    if (optimizationHours && optimizationHours.count > 5) {
+      const avg = optimizationHours.total / optimizationHours.count;
+      result.push({
+        type: "tip",
+        title: "Optimization tasks average " + avg.toFixed(1) + "h each",
+        description: "Consider investing in automation tools to reduce time spent on optimization tasks.",
+      });
+    }
+
+    // General recommendations
+    result.push({
+      type: "tip",
+      title: "Recommendation: Review edge case coverage",
+      description: `${stageCounts["Edge Cases"] || 0} edge case tasks suggests active quality work. Ensure test coverage tracks these patterns.`,
     });
 
-    return {
-      totalTasks: tasks.length,
-      completedTasks: tasks.filter((t) => t.status === "Completed").length,
-      totalHours: tasks.reduce((s, t) => s + t.hours_spent, 0),
-      stageDistribution: stageCounts,
-      memberStats: Object.entries(ownerStats).map(([name, stats]) => ({
-        name,
-        ...stats,
-        completionRate: stats.tasks > 0 ? Math.round((stats.completed / stats.tasks) * 100) : 0,
-      })),
-    };
+    return result;
   }, [tasks]);
-
-  const generateInsights = async () => {
-    if (!tasksSummary || !session) return;
-    setAiLoading(true);
-    try {
-      const resp = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-insights`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({ tasksSummary }),
-        }
-      );
-      const result = await resp.json();
-
-      if (!resp.ok) {
-        toast.error(result.error || "Failed to generate insights");
-        return;
-      }
-
-      setInsights(result.insights || []);
-      setHasGenerated(true);
-      toast.success("AI insights generated!");
-    } catch (e: any) {
-      toast.error(e.message);
-    } finally {
-      setAiLoading(false);
-    }
-  };
 
   const iconMap = {
     info: <Lightbulb className="h-4 w-4" />,
@@ -100,85 +125,32 @@ export default function Insights() {
     tip: "text-primary",
   };
 
-  if (tasksLoading) {
-    return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
-  }
-
-  if (!hasData) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <Database className="h-12 w-12 text-muted-foreground/30" />
-        <p className="text-sm text-muted-foreground">Connect a Google Sheet to generate AI insights</p>
-        <Link to="/data-sources"><Button>Connect Data Source</Button></Link>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">AI Insights & Recommendations</h1>
-          <p className="text-sm text-muted-foreground mt-1">AI-powered analysis of your team data</p>
-        </div>
-        <Button onClick={generateInsights} disabled={aiLoading} variant={hasGenerated ? "outline" : "default"} size="sm">
-          {aiLoading ? (
-            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-          ) : hasGenerated ? (
-            <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-          ) : (
-            <Sparkles className="mr-1.5 h-3.5 w-3.5" />
-          )}
-          {hasGenerated ? "Regenerate" : "Generate Insights"}
-        </Button>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <h1 className="text-2xl font-bold tracking-tight">Insights & Recommendations</h1>
+        <p className="text-sm text-muted-foreground mt-1">AI-powered and rule-based insights from your team data</p>
       </motion.div>
 
-      {!hasGenerated && !aiLoading && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center justify-center py-16 gap-4"
-        >
-          <Sparkles className="h-12 w-12 text-primary/30" />
-          <div className="text-center">
-            <p className="font-medium">Ready to analyze your team data</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Click "Generate Insights" to get AI-powered recommendations based on {tasks.length} tasks
-            </p>
-          </div>
-        </motion.div>
-      )}
-
-      {aiLoading && (
-        <div className="flex flex-col items-center justify-center py-16 gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Analyzing your team data...</p>
-        </div>
-      )}
-
-      {insights.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {insights.map((insight, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className={`rounded-xl border p-5 ${colorMap[insight.type] || colorMap.info}`}
-            >
-              <div className="flex items-start gap-3">
-                <div className={`mt-0.5 ${iconColorMap[insight.type] || iconColorMap.info}`}>
-                  {iconMap[insight.type] || iconMap.info}
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold">{insight.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{insight.description}</p>
-                </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {insights.map((insight, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08 }}
+            className={`rounded-xl border p-5 ${colorMap[insight.type]}`}
+          >
+            <div className="flex items-start gap-3">
+              <div className={`mt-0.5 ${iconColorMap[insight.type]}`}>{iconMap[insight.type]}</div>
+              <div>
+                <h3 className="text-sm font-semibold">{insight.title}</h3>
+                <p className="text-sm text-muted-foreground mt-1">{insight.description}</p>
               </div>
-            </motion.div>
-          ))}
-        </div>
-      )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }

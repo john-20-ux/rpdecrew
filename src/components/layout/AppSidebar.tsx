@@ -1,14 +1,13 @@
 import {
-  LayoutDashboard, Users, Layers, UserCircle, Lightbulb, Database, LogOut
+  LayoutDashboard, Users, Layers, UserCircle, Lightbulb
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useAuth } from "@/contexts/AuthContext";
+import { useLocation } from "react-router-dom";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -18,14 +17,10 @@ const navItems = [
   { title: "Insights", url: "/insights", icon: Lightbulb },
 ];
 
-const settingsItems = [
-  { title: "Data Sources", url: "/data-sources", icon: Database },
-];
-
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const { signOut } = useAuth();
+  const location = useLocation();
 
   return (
     <Sidebar collapsible="icon">
@@ -63,40 +58,6 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {settingsItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      className="hover:bg-sidebar-accent/50"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
-                    >
-                      <item.icon className="mr-2 h-4 w-4 shrink-0" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <div className="mt-auto p-2">
-          <Button
-            variant="ghost"
-            size={collapsed ? "icon" : "sm"}
-            className={collapsed ? "w-full" : "w-full justify-start"}
-            onClick={signOut}
-          >
-            <LogOut className="h-4 w-4 shrink-0" />
-            {!collapsed && <span className="ml-2">Sign Out</span>}
-          </Button>
-        </div>
       </SidebarContent>
     </Sidebar>
   );

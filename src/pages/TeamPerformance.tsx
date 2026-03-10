@@ -6,11 +6,11 @@ import {
 } from "recharts";
 import { useFilteredTasks } from "@/hooks/useFilteredTasks";
 import { STAGE_COLORS, STAGES, type Stage } from "@/lib/stage-colors";
+import { TEAM_MEMBERS } from "@/lib/mock-data";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trophy, Medal, Award, Loader2, Database } from "lucide-react";
+import { Trophy, Medal, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ExportBar } from "@/components/ExportBar";
-import { Button } from "@/components/ui/button";
 
 const TEAM_CHARTS = [
   { id: "tasks-by-person", label: "Tasks by Person" },
@@ -24,15 +24,10 @@ const PERSON_COLORS = [
 ];
 
 export default function TeamPerformance() {
-  const { tasks, loading, hasData } = useFilteredTasks();
-
-  const teamMembers = useMemo(() => {
-    const owners = new Set(tasks.map((t) => t.owner));
-    return Array.from(owners).sort();
-  }, [tasks]);
+  const tasks = useFilteredTasks();
 
   const memberStats = useMemo(() => {
-    const stats = teamMembers.map((name) => {
+    const stats = TEAM_MEMBERS.map((name) => {
       const memberTasks = tasks.filter((t) => t.owner === name);
       const completed = memberTasks.filter((t) => t.status === "Completed");
       const hours = memberTasks.reduce((s, t) => s + t.hours_spent, 0);
@@ -53,41 +48,22 @@ export default function TeamPerformance() {
     }).filter((s) => s.tasksWorked > 0);
 
     return stats.sort((a, b) => b.completed - a.completed);
-  }, [tasks, teamMembers]);
+  }, [tasks]);
 
   const barChartData = useMemo(
     () => memberStats.map((s) => ({ name: s.name.split(" ")[0], completed: s.completed, hours: s.hours })),
     [memberStats]
   );
 
-  const allStages = useMemo(() => {
-    const stages = new Set(tasks.map((t) => t.stage));
-    return Array.from(stages);
-  }, [tasks]);
-
   const stackedData = useMemo(() => {
     return memberStats.map((s) => {
       const row: Record<string, string | number> = { name: s.name.split(" ")[0] };
-      allStages.forEach((stage) => { row[stage] = s.stageCounts[stage] || 0; });
+      STAGES.forEach((stage) => { row[stage] = s.stageCounts[stage] || 0; });
       return row;
     });
-  }, [memberStats, allStages]);
+  }, [memberStats]);
 
   const leaderboard = memberStats.slice(0, 5);
-
-  if (loading) {
-    return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
-  }
-
-  if (!hasData) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <Database className="h-12 w-12 text-muted-foreground/30" />
-        <p className="text-sm text-muted-foreground">Connect a Google Sheet to see team performance</p>
-        <Link to="/data-sources"><Button>Connect Data Source</Button></Link>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -145,8 +121,8 @@ export default function TeamPerformance() {
                 <XAxis type="number" tick={{ fontSize: 11 }} />
                 <YAxis dataKey="name" type="category" tick={{ fontSize: 11 }} width={70} />
                 <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }} />
-                {allStages.map((stage) => (
-                  <Bar key={stage} dataKey={stage} stackId="a" fill={STAGE_COLORS[stage as Stage] || "hsl(220, 9%, 46%)"} />
+                {STAGES.map((stage) => (
+                  <Bar key={stage} dataKey={stage} stackId="a" fill={STAGE_COLORS[stage]} />
                 ))}
               </BarChart>
             </ResponsiveContainer>

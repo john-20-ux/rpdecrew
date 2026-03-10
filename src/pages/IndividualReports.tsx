@@ -2,15 +2,15 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useFilteredTasks } from "@/hooks/useFilteredTasks";
-import { UserCircle, Loader2, Database } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { TEAM_MEMBERS } from "@/lib/mock-data";
+import { STAGE_COLORS, type Stage } from "@/lib/stage-colors";
+import { UserCircle } from "lucide-react";
 
 export default function IndividualReports() {
-  const { tasks, loading, hasData } = useFilteredTasks();
+  const tasks = useFilteredTasks();
 
   const members = useMemo(() => {
-    const ownerSet = new Set(tasks.map((t) => t.owner));
-    return Array.from(ownerSet).map((name) => {
+    return TEAM_MEMBERS.map((name) => {
       const memberTasks = tasks.filter((t) => t.owner === name);
       const completed = memberTasks.filter((t) => t.status === "Completed").length;
       const hours = memberTasks.reduce((s, t) => s + t.hours_spent, 0);
@@ -18,22 +18,8 @@ export default function IndividualReports() {
       memberTasks.forEach((t) => { stageCounts[t.stage] = (stageCounts[t.stage] || 0) + 1; });
       const topStage = Object.entries(stageCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
       return { name, tasks: memberTasks.length, completed, hours: Math.round(hours * 10) / 10, topStage };
-    }).filter((m) => m.tasks > 0).sort((a, b) => b.tasks - a.tasks);
+    }).filter((m) => m.tasks > 0);
   }, [tasks]);
-
-  if (loading) {
-    return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
-  }
-
-  if (!hasData) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <Database className="h-12 w-12 text-muted-foreground/30" />
-        <p className="text-sm text-muted-foreground">Connect a Google Sheet to see individual reports</p>
-        <Link to="/data-sources"><Button>Connect Data Source</Button></Link>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
