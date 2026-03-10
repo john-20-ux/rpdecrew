@@ -14,7 +14,152 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      connected_sheets: {
+        Row: {
+          created_at: string
+          folder_path: string | null
+          id: string
+          is_active: boolean
+          last_synced_at: string | null
+          sheet_name: string | null
+          spreadsheet_id: string
+          spreadsheet_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          folder_path?: string | null
+          id?: string
+          is_active?: boolean
+          last_synced_at?: string | null
+          sheet_name?: string | null
+          spreadsheet_id: string
+          spreadsheet_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          folder_path?: string | null
+          id?: string
+          is_active?: boolean
+          last_synced_at?: string | null
+          sheet_name?: string | null
+          spreadsheet_id?: string
+          spreadsheet_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      google_connections: {
+        Row: {
+          access_token: string
+          created_at: string
+          email: string | null
+          id: string
+          refresh_token: string | null
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      sheet_tasks: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          date_worked: string | null
+          hours_spent: number | null
+          id: string
+          notes: string | null
+          owner: string | null
+          raw_row: Json | null
+          sheet_id: string
+          stage: string | null
+          status: string | null
+          task_link: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          date_worked?: string | null
+          hours_spent?: number | null
+          id?: string
+          notes?: string | null
+          owner?: string | null
+          raw_row?: Json | null
+          sheet_id: string
+          stage?: string | null
+          status?: string | null
+          task_link?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          date_worked?: string | null
+          hours_spent?: number | null
+          id?: string
+          notes?: string | null
+          owner?: string | null
+          raw_row?: Json | null
+          sheet_id?: string
+          stage?: string | null
+          status?: string | null
+          task_link?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sheet_tasks_sheet_id_fkey"
+            columns: ["sheet_id"]
+            isOneToOne: false
+            referencedRelation: "connected_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
