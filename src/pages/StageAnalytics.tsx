@@ -5,11 +5,14 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import { useFilteredTasks } from "@/hooks/useFilteredTasks";
-import { STAGE_COLORS, STAGES, type Stage } from "@/lib/stage-colors";
+import { STAGE_COLORS, type Stage } from "@/lib/stage-colors";
 import { useDateFilter } from "@/contexts/DateFilterContext";
-import { eachDayOfInterval, format, parseISO } from "date-fns";
+import { eachDayOfInterval, format } from "date-fns";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ExportBar } from "@/components/ExportBar";
+import { Loader2, Database } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const STAGE_CHARTS = [
   { id: "stage-pie", label: "Task Distribution" },
@@ -18,11 +21,12 @@ const STAGE_CHARTS = [
 ];
 
 export default function StageAnalytics() {
-  const tasks = useFilteredTasks();
+  const { tasks, loading, hasData } = useFilteredTasks();
   const { dateRange } = useDateFilter();
 
   const stageStats = useMemo(() => {
-    return STAGES.map((stage) => {
+    const stageSet = new Set(tasks.map((t) => t.stage));
+    return Array.from(stageSet).map((stage) => {
       const stageTasks = tasks.filter((t) => t.stage === stage);
       const hours = stageTasks.reduce((s, t) => s + t.hours_spent, 0);
       const completed = stageTasks.filter((t) => t.status === "Completed");
@@ -32,14 +36,15 @@ export default function StageAnalytics() {
         hours: Math.round(hours * 10) / 10,
         avgHours: stageTasks.length > 0 ? Math.round((hours / stageTasks.length) * 10) / 10 : 0,
         completionRate: stageTasks.length > 0 ? Math.round((completed.length / stageTasks.length) * 100) : 0,
-        color: STAGE_COLORS[stage],
+        color: STAGE_COLORS[stage as Stage] || "hsl(220, 9%, 46%)",
       };
     }).filter((s) => s.tasks > 0).sort((a, b) => b.tasks - a.tasks);
   }, [tasks]);
 
+  const allStages = useMemo(() => stageStats.map((s) => s.name), [stageStats]);
+
   const trendData = useMemo(() => {
     const days = eachDayOfInterval({ start: dateRange.from, end: dateRange.to });
-    // Group into weekly buckets for readability
     const weekSize = Math.max(1, Math.ceil(days.length / 15));
     const buckets: Record<string, string | number>[] = [];
 
@@ -50,15 +55,29 @@ export default function StageAnalytics() {
       const bucketDates = new Set(bucket.map((d) => format(d, "yyyy-MM-dd")));
 
       const bucketTasks = tasks.filter((t) => bucketDates.has(t.date_worked));
-      STAGES.forEach((stage) => {
+      allStages.forEach((stage) => {
         row[stage] = bucketTasks.filter((t) => t.stage === stage).length;
       });
       buckets.push(row);
     }
     return buckets;
-  }, [tasks, dateRange]);
+  }, [tasks, dateRange, allStages]);
 
   const topStages = stageStats.slice(0, 6).map((s) => s.name);
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
+  }
+
+  if (!hasData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <Database className="h-12 w-12 text-muted-foreground/30" />
+        <p className="text-sm text-muted-foreground">Connect a Google Sheet to see stage analytics</p>
+        <Link to="/data-sources"><Button>Connect Data Source</Button></Link>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -71,7 +90,6 @@ export default function StageAnalytics() {
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Pie */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="stage-pie">
           <h3 className="text-sm font-semibold mb-4">Task Distribution</h3>
           <div className="h-[300px]">
@@ -87,7 +105,6 @@ export default function StageAnalytics() {
           </div>
         </motion.div>
 
-        {/* Hours bar */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="hours-per-stage">
           <h3 className="text-sm font-semibold mb-4">Hours per Stage</h3>
           <div className="h-[300px]">
@@ -106,7 +123,6 @@ export default function StageAnalytics() {
         </motion.div>
       </div>
 
-      {/* Trends */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-xl border border-border bg-card p-5" data-chart-id="stage-trends">
         <h3 className="text-sm font-semibold mb-4">Stage Trends Over Time</h3>
         <div className="h-[300px]">
@@ -118,14 +134,13 @@ export default function StageAnalytics() {
               <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }} />
               <Legend wrapperStyle={{ fontSize: "11px" }} />
               {topStages.map((stage) => (
-                <Line key={stage} type="monotone" dataKey={stage} stroke={STAGE_COLORS[stage as Stage]} strokeWidth={2} dot={false} />
+                <Line key={stage} type="monotone" dataKey={stage} stroke={STAGE_COLORS[stage as Stage] || "hsl(220, 9%, 46%)"} strokeWidth={2} dot={false} />
               ))}
             </LineChart>
           </ResponsiveContainer>
         </div>
       </motion.div>
 
-      {/* Table */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="rounded-xl border border-border bg-card">
         <div className="p-5 pb-0"><h3 className="text-sm font-semibold mb-4">Stage Breakdown</h3></div>
         <Table>

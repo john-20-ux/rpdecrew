@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { type Task } from "@/lib/mock-data";
-import { format, parseISO, eachDayOfInterval } from "date-fns";
+import { format, eachDayOfInterval } from "date-fns";
 import { useDateFilter } from "@/contexts/DateFilterContext";
 
 interface Props {

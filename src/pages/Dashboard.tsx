@@ -6,10 +6,13 @@ import { StageDistributionChart } from "@/components/dashboard/StageDistribution
 import { useFilteredTasks } from "@/hooks/useFilteredTasks";
 import { useDateFilter } from "@/contexts/DateFilterContext";
 import { getPreviousPeriodRange } from "@/lib/date-utils";
-import { MOCK_TASKS } from "@/lib/mock-data";
+import { useSheetTasks } from "@/hooks/useSheetTasks";
 import { isWithinInterval, parseISO } from "date-fns";
 import { motion } from "framer-motion";
 import { ExportBar } from "@/components/ExportBar";
+import { Link } from "react-router-dom";
+import { Database, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const DASHBOARD_CHARTS = [
   { id: "tasks-over-time", label: "Tasks Over Time" },
@@ -17,16 +20,20 @@ const DASHBOARD_CHARTS = [
 ];
 
 export default function Dashboard() {
-  const tasks = useFilteredTasks();
+  const { tasks, loading, hasData } = useFilteredTasks();
   const { dateRange } = useDateFilter();
+  const { data: allTasks } = useSheetTasks();
 
   const prevRange = useMemo(() => getPreviousPeriodRange(dateRange), [dateRange]);
   const prevTasks = useMemo(
     () =>
-      MOCK_TASKS.filter((t) =>
-        isWithinInterval(parseISO(t.date_worked), { start: prevRange.from, end: prevRange.to })
-      ),
-    [prevRange]
+      (allTasks || []).filter((t) => {
+        if (!t.date_worked) return false;
+        try {
+          return isWithinInterval(parseISO(t.date_worked), { start: prevRange.from, end: prevRange.to });
+        } catch { return false; }
+      }),
+    [allTasks, prevRange]
   );
 
   const metrics = useMemo(() => {
@@ -51,6 +58,29 @@ export default function Dashboard() {
       activeMembers: owners.size,
     };
   }, [tasks, prevTasks]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!hasData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <Database className="h-12 w-12 text-muted-foreground/30" />
+        <div className="text-center">
+          <p className="font-medium">No data connected</p>
+          <p className="text-sm text-muted-foreground mt-1">Connect a Google Sheet to see your dashboard</p>
+        </div>
+        <Link to="/data-sources">
+          <Button>Connect Data Source</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
