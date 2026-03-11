@@ -151,7 +151,7 @@ export default function Settings() {
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {/* DATA INTEGRATIONS */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Card className="h-full">
@@ -162,13 +162,13 @@ export default function Settings() {
               <CardDescription>Link your external accounts to pull in workforce metrics.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-between p-4 border rounded-xl bg-card">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center p-2">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" alt="Google Sheets" className="h-8 w-8" />
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border rounded-xl bg-card">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 shrink-0 rounded-full bg-blue-50 flex items-center justify-center p-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" alt="Google Sheets" className="h-6 w-6 sm:h-8 sm:w-8" />
                   </div>
-                  <div>
-                    <h3 className="font-semibold flex items-center gap-2">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold flex flex-wrap items-center gap-2 text-sm sm:text-base">
                       Google Sheets
                       {isConnected ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
@@ -180,12 +180,13 @@ export default function Settings() {
                         </span>
                       )}
                     </h3>
-                    <p className="text-sm text-muted-foreground">Sync your engineering tracking spreadsheets.</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Sync your engineering tracking spreadsheets.</p>
                   </div>
                 </div>
                 <Button
                   variant={isConnected ? "outline" : "default"}
                   onClick={isConnected ? handleDisconnect : handleConnect}
+                  className="w-full sm:w-auto"
                 >
                   {isConnected ? "Disconnect" : "Connect"}
                 </Button>
@@ -200,7 +201,7 @@ export default function Settings() {
                         <FileUp className="h-4 w-4" /> Selected: {sheetName}
                       </p>
                     )}
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <Input
                         id="sheetUrl"
                         placeholder="https://docs.google.com/spreadsheets/d/1qAP_fW4f..."
@@ -208,7 +209,7 @@ export default function Settings() {
                         onChange={(e) => setSheetUrl(e.target.value)}
                         className="flex-1"
                       />
-                      <Button onClick={handleSync} disabled={isSyncing} className="w-[120px]">
+                      <Button onClick={handleSync} disabled={isSyncing} className="w-full sm:w-[120px]">
                         {isSyncing ? (
                           <>
                             <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> Syncing
@@ -220,15 +221,15 @@ export default function Settings() {
                         )}
                       </Button>
                     </div>
-                    <div className="flex items-center justify-between mt-2">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-2">
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" /> Data will automatically sync whenever the sheet is updated.
+                        <AlertCircle className="h-3 w-3 shrink-0" /> Data will automatically sync whenever the sheet is updated.
                       </p>
                       <Button variant="link" size="sm" onClick={() => openPicker((doc: any, token: string) => {
                         setSheetUrl(doc.url);
                         setSheetName(doc.name);
                         if (token) fetchSheetTabs(doc.id, token);
-                      })} className="text-xs h-auto p-0">
+                      })} className="text-xs h-auto p-0 shrink-0">
                         Select different file
                       </Button>
                     </div>
@@ -276,7 +277,7 @@ export default function Settings() {
                 <h3 className="font-semibold text-sm flex items-center gap-2">
                   <UserPlus className="h-4 w-4" /> Add New User
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Name</Label>
                     <Input id="name" placeholder="John Doe" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} required />
