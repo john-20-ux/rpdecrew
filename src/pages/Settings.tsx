@@ -201,7 +201,7 @@ export default function Settings() {
                         <FileUp className="h-4 w-4" /> Selected: {sheetName}
                       </p>
                     )}
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <Input
                         id="sheetUrl"
                         placeholder="https://docs.google.com/spreadsheets/d/1qAP_fW4f..."
@@ -209,7 +209,7 @@ export default function Settings() {
                         onChange={(e) => setSheetUrl(e.target.value)}
                         className="flex-1"
                       />
-                      <Button onClick={handleSync} disabled={isSyncing} className="w-[120px]">
+                      <Button onClick={handleSync} disabled={isSyncing} className="w-full sm:w-[120px]">
                         {isSyncing ? (
                           <>
                             <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> Syncing
@@ -221,15 +221,15 @@ export default function Settings() {
                         )}
                       </Button>
                     </div>
-                    <div className="flex items-center justify-between mt-2">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-2">
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" /> Data will automatically sync whenever the sheet is updated.
+                        <AlertCircle className="h-3 w-3 shrink-0" /> Data will automatically sync whenever the sheet is updated.
                       </p>
                       <Button variant="link" size="sm" onClick={() => openPicker((doc: any, token: string) => {
                         setSheetUrl(doc.url);
                         setSheetName(doc.name);
                         if (token) fetchSheetTabs(doc.id, token);
-                      })} className="text-xs h-auto p-0">
+                      })} className="text-xs h-auto p-0 shrink-0">
                         Select different file
                       </Button>
                     </div>
