@@ -162,13 +162,13 @@ export default function Settings() {
               <CardDescription>Link your external accounts to pull in workforce metrics.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-between p-4 border rounded-xl bg-card">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center p-2">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" alt="Google Sheets" className="h-8 w-8" />
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border rounded-xl bg-card">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 shrink-0 rounded-full bg-blue-50 flex items-center justify-center p-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" alt="Google Sheets" className="h-6 w-6 sm:h-8 sm:w-8" />
                   </div>
-                  <div>
-                    <h3 className="font-semibold flex items-center gap-2">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold flex flex-wrap items-center gap-2 text-sm sm:text-base">
                       Google Sheets
                       {isConnected ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
@@ -180,12 +180,13 @@ export default function Settings() {
                         </span>
                       )}
                     </h3>
-                    <p className="text-sm text-muted-foreground">Sync your engineering tracking spreadsheets.</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Sync your engineering tracking spreadsheets.</p>
                   </div>
                 </div>
                 <Button
                   variant={isConnected ? "outline" : "default"}
                   onClick={isConnected ? handleDisconnect : handleConnect}
+                  className="w-full sm:w-auto"
                 >
                   {isConnected ? "Disconnect" : "Connect"}
                 </Button>
