@@ -277,7 +277,7 @@ export default function Settings() {
                 <h3 className="font-semibold text-sm flex items-center gap-2">
                   <UserPlus className="h-4 w-4" /> Add New User
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Name</Label>
                     <Input id="name" placeholder="John Doe" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} required />
